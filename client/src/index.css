@@ -1,0 +1,157 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 20px;
+  background: #fdfdfd;
+  color: #333;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+header {
+  border-bottom: 2px solid #333;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+header h1 {
+  margin: 0 0 10px 0;
+}
+
+nav {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+button {
+  padding: 6px 12px;
+  cursor: pointer;
+  background: #f0f0f0;
+  border: 1px solid #777;
+  border-radius: 3px;
+  font-size: 14px;
+}
+
+button:hover {
+  background: #ddd;
+}
+
+button.active {
+  background: #333;
+  color: white;
+}
+
+button.danger {
+  color: #a00;
+  border-color: #a00;
+}
+
+.user-status {
+  font-size: 13px;
+  color: #555;
+  margin-top: 5px;
+}
+
+.card {
+  border: 1px solid #ccc;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 4px;
+  background: white;
+}
+
+.form-group {
+  margin-bottom: 12px;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+  border: 1px solid #bbb;
+  border-radius: 3px;
+  font-size: 14px;
+}
+
+.message-box {
+  padding: 8px 12px;
+  margin-bottom: 12px;
+  border-radius: 3px;
+  font-size: 14px;
+}
+
+.error {
+  background: #ffe6e6;
+  border: 1px solid #ff9999;
+  color: #900;
+}
+
+.success {
+  background: #e6ffe6;
+  border: 1px solid #99ff99;
+  color: #060;
+}
+
+.tag {
+  display: inline-block;
+  padding: 2px 6px;
+  font-size: 12px;
+  border: 1px solid #999;
+  border-radius: 3px;
+  margin-left: 6px;
+}
+
+.tag-verified {
+  background: #d4edda;
+  color: #155724;
+}
+
+.tag-sold {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.listing-item {
+  border: 1px solid #ddd;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 3px;
+}
+
+.chat-history {
+  height: 180px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  padding: 10px;
+  background: #fafafa;
+  margin-bottom: 10px;
+}
+
+.chat-bubble {
+  margin-bottom: 8px;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.chat-me {
+  background: #e1f5fe;
+  text-align: right;
+}
+
+.chat-other {
+  background: #eee;
+  text-align: left;
+}

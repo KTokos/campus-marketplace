@@ -1,0 +1,13 @@
+{
+  "name": "campus-marketplace",
+  "version": "1.0.0",
+  "description": "Campus Marketplace - MERN Stack Project",
+  "scripts": {
+    "client": "npm run dev --prefix client",
+    "server": "npm start --prefix server",
+    "build:client": "npm run build --prefix client"
+  },
+  "keywords": ["marketplace", "mern", "react", "express", "student"],
+  "author": "",
+  "license": "ISC"
+}
