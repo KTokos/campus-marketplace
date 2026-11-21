@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default function MessagingView({ currentUser, messages, onSendMessage, activeItem, onGoToVerify }) {
+export default function MessagingView({ currentUser, messages, onSendMessage, activeItem, onGoToVerify, messageError }) {
   // ----- State variables / setters -----
 
   const [text, setText] = useState('');
@@ -20,20 +20,25 @@ export default function MessagingView({ currentUser, messages, onSendMessage, ac
 
   // handleSend(e):
   //    Passes the message to onSendMessage then resets the input box
-  function handleSend(e) {
+  async function handleSend(e) {
     e.preventDefault();
+
     if (!text.trim()) return;
 
-    onSendMessage({
-      id: Date.now(),
-      sender: currentUser.email,
-      receiver: activeItem ? activeItem.sellerEmail : 'Seller',
-      itemTitle: activeItem ? activeItem.title : 'General Inquiry',
+    const sent = await onSendMessage({
       text: text.trim()
     });
 
-    setText('');
+    if (sent) {
+      setText('');
+    }
   }
+
+  {messageError && (
+    <div className="message-box error" role="alert">
+      {messageError}
+    </div>
+  )}
 
   return (
     <div className="card">
@@ -64,7 +69,13 @@ export default function MessagingView({ currentUser, messages, onSendMessage, ac
         )}
       </div>
 
-      <form onSubmit={handleSend} style={{ display: 'flex', gap: '8px' }}>
+      {messageError && (
+    <div className="message-box error" role="alert">
+      {messageError}
+    </div>
+    )}
+
+    <form onSubmit={handleSend} style={{ display: 'flex', gap: '8px' }}>
         <input
           type="text"
           placeholder="Type message (e.g. Is this still available?)"
