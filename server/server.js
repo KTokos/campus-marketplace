@@ -3,7 +3,7 @@ const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 app.use(cors());
 app.use(express.json());
@@ -52,14 +52,55 @@ app.delete('/api/listings/:id', (req, res) => {
   res.json({ message: 'Listing removed successfully', id: req.params.id });
 });
 
-// UC-04: Messaging route stubs
+// UC-04: message seller
+// temporary in-memory message storage for prototype testing
+const messages = [];
+
+// retrieve those messages that belongs to a conversation
 app.get('/api/messages/:conversationId', (req, res) => {
-  res.json([]);
+  const { conversationId } = req.params;
+
+  const conversationMessages = messages.filter(
+    (message) => message.conversationId === conversationId
+  );
+
+  res.json(conversationMessages);
 });
 
+// send new message
 app.post('/api/messages', (req, res) => {
-  const { conversationId, text, senderId } = req.body;
-  res.status(201).json({ message: 'Message sent', data: { conversationId, text, senderId, sentAt: new Date() } });
+  const { conversationId, text, senderId, receiverId } = req.body;
+
+  if (
+    typeof conversationId !== 'string' ||
+    !conversationId.trim() ||
+    typeof text !== 'string' ||
+    !text.trim() ||
+    typeof senderId !== 'string' ||
+    !senderId.trim() ||
+    typeof receiverId !== 'string' ||
+    !receiverId.trim()
+  ) {
+    return res.status(400).json({
+      error: 'Conversation, sender, receiver, and message text are required.'
+    });
+  }
+
+  const newMessage = {
+    id: String(messages.length + 1),
+    conversationId: conversationId.trim(),
+    senderId: senderId.trim(),
+    receiverId: receiverId.trim(),
+    text: text.trim(),
+    sentAt: new Date().toISOString()
+  };
+
+  messages.push(newMessage);
+
+  res.status(201).json({
+    message: 'Message sent successfully',
+    data: newMessage
+  });
 });
 
 app.listen(PORT, () => {

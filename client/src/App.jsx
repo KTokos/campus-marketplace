@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Navbar from './components/Navbar';
 import StudentVerification from './components/StudentVerification';
 import PublishListing from './components/PublishListing';
 import SearchBrowseListings from './components/SearchBrowseListings';
 import MessagingView from './components/MessagingView';
 import ManageListings from './components/ManageListings';
+
+const API_URL = 'http://localhost:5001';
 
 export default function App() {
   // ----- State variables / setters -----
@@ -17,6 +19,7 @@ export default function App() {
 
   const [listings, setListings] = useState([]);
   const [messages, setMessages] = useState([]);
+  const [messageError, setMessageError] = useState('');
   const [activeTab, setActiveTab] = useState('search');
   const [activeItem, setActiveItem] = useState(null);
 
@@ -52,14 +55,95 @@ export default function App() {
   //    Updates the active item to the passed in item and sets the tab to messages
   function handleMessageSeller(item) {
     setActiveItem(item);
+    setMessageError('');
     setActiveTab('messages');
   }
 
-  // handleSendMessage(msg):
-  //    Appends the passed in message to the messages list
-  //    Probably not good in the long term
-  function handleSendMessage(msg) {
-    setMessages([...messages, msg]);
+  useEffect(() => {
+    if (activeTab !== 'messages' || !activeItem) return;
+
+    const conversationId = String(activeItem.id);
+    let cancelled = false;
+
+    async function loadMessages() {
+      try {
+        const response = await fetch(
+          `${API_URL}/api/messages/${encodeURIComponent(conversationId)}`
+        );
+
+        if (!response.ok) {
+          throw new Error('Could not load messages.')
+        }
+
+        const data = await response.json();
+
+        if (!cancelled) {
+          setMessages(data.map((message) => ({
+            ...message,
+            sender: message.senderId,
+            receiver: message.receiverId,
+            itemTitle: activeItem.title
+          })));
+
+          setMessageError('');
+        }
+      } catch (error) {
+        if (!cancelled) {
+            setMessageError(error.message);
+          }
+        }
+      }
+
+      loadMessages();
+
+      return () => {
+        cancelled = true;
+      };
+    }, [activeTab, activeItem]);
+
+
+  async function handleSendMessage(msg) {
+    if (!activeItem || !currentUser?.isVerified) {
+      setMessageError('Select a listing and sign in first.')
+      return false;
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/api/messages`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          conversationId: String(activeItem.id),
+          senderId: currentUser.email,
+          receiverId: activeItem.sellerEmail,
+          text: msg.text
+        })
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to send message.');
+      }
+
+      setMessages((previous) => [
+        ...previous,
+        {
+          ...result.data,
+          sender: result.data.senderId,
+          receiver: result.data.receiverId,
+          itemTitle: activeItem.title
+        }
+      ]);
+
+      setMessageError('');
+      return true;
+    } catch (error) {
+      setMessageError(error.message);
+      return false;
+    }
   }
 
   // ----- Main page layout -----
@@ -104,6 +188,7 @@ export default function App() {
           activeItem={activeItem}
           onSendMessage={handleSendMessage}
           onGoToVerify={() => setActiveTab('verify')}
+          messageError={messageError}
         />
       )}
 
