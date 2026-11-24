@@ -2,6 +2,10 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 
+// Custom class imports
+const Auth = require('./auth')
+const auth = new Auth();
+
 const app = express();
 const PORT = process.env.PORT || 5001;
 
@@ -13,13 +17,17 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', service: 'Campus Marketplace Backend' });
 });
 
-// UC-01: Verify Student Account route stubs
+// ----- UC-01: User Registration, Authentication, & Access Control Endpoints -----
+
+// /api/auth/register:
+//    POST endpoint that takes the passed in name, email and password
+//    and sends a registration email
 app.post('/api/auth/register', (req, res) => {
-  const { name, email, studentId } = req.body;
-  if (!email || !email.endsWith('.edu')) {
-    return res.status(400).json({ error: 'Valid university email required' });
-  }
-  res.status(200).json({ message: 'Verification challenge sent', email });
+  // Extract the user details from the body
+  const { name, email, password } = req.body;
+  
+  // Send off the registration process to the auth class
+  return auth.register(name, email, password);
 });
 
 app.post('/api/auth/verify', (req, res) => {
@@ -28,6 +36,10 @@ app.post('/api/auth/verify', (req, res) => {
     return res.status(400).json({ error: 'Invalid or expired verification code' });
   }
   res.status(200).json({ message: 'Account verified successfully', email, verified: true });
+});
+
+app.get('/api/auth/users', (req, res) => {
+
 });
 
 // UC-02 & UC-03 & UC-05: Listings route stubs
